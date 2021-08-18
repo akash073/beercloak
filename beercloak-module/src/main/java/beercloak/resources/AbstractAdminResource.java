@@ -51,7 +51,7 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
 
     public void setup() {
         setupAuth();
-        setupEvents();
+        //setupEvents();
     }
 
     private void setupAuth() {
@@ -80,10 +80,10 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
             throw new NotAuthorizedException("Unknown realm in token");
         }
         session.getContext().setRealm(realm);
-        AuthenticationManager.AuthResult authResult = authManager.authenticateBearerToken(session, realm, session.getContext().getUri(), clientConnection, headers);
+       /* AuthenticationManager.AuthResult authResult = authManager.authenticateIdentityCookie(session, realm, session.getContext().getUri(), clientConnection, headers);
         if (authResult == null) {
             throw new NotAuthorizedException("Bearer");
-        }
+        }*/
 
         ClientModel client
                 = realm.getName().equals(Config.getAdminRealm())
@@ -94,22 +94,22 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
             throw new NotFoundException("Could not find client for authorization");
         }
 
-        UserModel user = authResult.getUser();
+        //UserModel user = authResult.getUser();
 
-        Class clazz = (Class)((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+       /* Class clazz = (Class)((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
         try {
             Constructor<? extends Type> constructor = clazz.getConstructor(RealmModel.class, AccessToken.class, UserModel.class, ClientModel.class);
             auth = (T) constructor.newInstance(new Object[] { realm, token, user, client });
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             LOG.error("Failed to instantiate AdminAuth instance", ex);
-        }
+        }*/
 
     }
 
-    private void setupEvents() {
+    /*private void setupEvents() {
         adminEvent = new AdminEventBuilder(session.getContext().getRealm(), auth, session, session.getContext().getConnection())
                 .realm(session.getContext().getRealm());
-    }
+    }*/
 
 }

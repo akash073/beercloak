@@ -1,23 +1,17 @@
 package beercloak.resources;
 
 import beercloak.Drunkenness;
+import beercloak.dto.UserDto;
 import beercloak.models.jpa.entities.BeerEntity;
 import beercloak.representations.BeerRepresentation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,8 +21,10 @@ import org.keycloak.events.admin.OperationType;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ModelDuplicateException;
 import org.keycloak.models.RealmModel;
+import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.services.ErrorResponse;
+import org.keycloak.services.managers.AppAuthManager;
 
 /**
  * @author <a href="mailto:mitya@cargosoft.ru">Dmitry Telegin</a>
@@ -39,6 +35,9 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
     private KeycloakSession session;
 
     private final EntityManager em;
+
+    private final String defaultAttr = "merchent_id";
+    Logger logger = Logger.getLogger(this.getClass().getName());
 
     public BeerResource(RealmModel realm, EntityManager em) {
         super(realm);
@@ -247,6 +246,71 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
         rep.setAbv(entity.getAbv());
 
         return rep;
+
+    }
+
+    @GET
+    @Path("users/search-by-attr2")
+    @NoCache
+    @Produces({ org.keycloak.utils.MediaType.APPLICATION_JSON })
+    @Encoded
+    public List<UserDto> searchUsersByAttribute(@DefaultValue(defaultAttr) @QueryParam("attr") String attr,
+                                                @QueryParam("value") String value) {
+
+        logger.info("searchUsersByAttribute: attr= " + attr + " value= " +value );
+
+
+        AppAuthManager authManager = new AppAuthManager();
+        try {
+           // logger.info("searchUsersByAttribute: Auth manager is null " + new Gson().toJson(authManager) );
+
+
+           // String tokenString = authManager.extractAuthorizationHeaderToken(headers);
+
+           /* if (tokenString == null) {
+                logger.info("searchUsersByAttribute: tokenString is null "  );
+            }*/
+
+            //
+        }catch (Exception e){
+            logger.info("searchUsersByAttribute: Exception= " + e.getMessage() );
+        }
+        //
+
+        //
+
+        RealmModel realm = session.getContext().getRealm();
+        // logger.info("searchUsersByAttribute: count= " + session.getContext().getClient().getName().toString() );
+
+        Long count = session.users().getUsersStream(realm,false).count();
+/*        Long count = session.users().getUsersStream(realm,true)
+                .filter(x->x.getAttributes().keySet().stream().filter(y->y.equals("merchant_id")).findFirst().get().equals("1"))).count();*/
+        logger.info("searchUsersByAttribute: count= " + count );
+
+        //MapStorage<UUID, TestEntity, UserDto> userStore;
+       /* ModelCriteriaBuilder<UserModel> mcb = KeycloakModelUtils.createCriteriaBuilder()
+                .compare(UserModel.SearchableFields.REALM_ID, ModelCriteriaBuilder.Operator.EQ, realm.getId())
+                .compare(UserModel.SearchableFields.ATTRIBUTE, ModelCriteriaBuilder.Operator.EQ, attr, value);
+*/
+       /* List<UserDto> userDtos = new ArrayList<>();
+        userDtos.add(userDto);*/
+
+        List<UserModel> userModels= session.users().searchForUserByUserAttribute(attr, value, session.getContext().getRealm())
+                .stream().collect(Collectors.toList());
+
+        List<UserDto> userDtos = new ArrayList<>();
+
+        if(userModels!=null){
+            logger.info("userModels: userModels= " + userModels.size() );
+            UserDto userDto = new UserDto("akash","bastah","jdjd","11","em" +
+                    "email","1");
+            UserModel userModel = userModels.get(0);
+            logger.info("userModel: userModel= {}" + userModel.getUsername() );
+
+            userDtos.add(userDto);
+        }
+
+        return userDtos;
 
     }
 

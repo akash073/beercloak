@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="beercloak-module" />
+        <module name="beercloak" />
+        <module name="beercloak-core" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="beercloak" target="1.5" />
+      <module name="beercloak-core" target="1.8" />
+      <module name="beercloak-module" target="1.8" />
+      <module name="beercloak-parent" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

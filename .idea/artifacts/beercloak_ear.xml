@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="ear" name="beercloak:ear">
+    <output-path>$PROJECT_DIR$/beercloak-ear/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>beercloak</module>
+        <packaging>ear</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="beercloak-1.0-SNAPSHOT.ear">
+      <element id="artifact" artifact-name="beercloak:ear exploded" />
+    </root>
+  </artifact>
+</component>
