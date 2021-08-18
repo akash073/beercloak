@@ -58,7 +58,7 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
 
         AppAuthManager authManager = new AppAuthManager();
         String tokenString = authManager.extractAuthorizationHeaderToken(headers);
-
+        LOG.info("tokenString= "+tokenString);
         if (tokenString == null) {
             throw new NotAuthorizedException("Bearer");
         }
@@ -68,6 +68,7 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
         try {
             JWSInput input = new JWSInput(tokenString);
             token = input.readJsonContent(AccessToken.class);
+            LOG.info("token= "+token);
         } catch (JWSInputException e) {
             throw new NotAuthorizedException("Bearer token format error");
         }
@@ -80,11 +81,13 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
             throw new NotAuthorizedException("Unknown realm in token");
         }
         session.getContext().setRealm(realm);
-       /* AuthenticationManager.AuthResult authResult = authManager.authenticateIdentityCookie(session, realm, session.getContext().getUri(), clientConnection, headers);
+
+      /*  AuthenticationManager.AuthResult authResult = authManager.authenticateIdentityCookie()*/
+     /*   AuthenticationManager.AuthResult authResult = authManager.authenticateIdentityCookie(session, realm, session.getContext().getUri(), clientConnection, headers);
         if (authResult == null) {
             throw new NotAuthorizedException("Bearer");
         }*/
-
+        LOG.info("realm = "+realm.getName());
         ClientModel client
                 = realm.getName().equals(Config.getAdminRealm())
                 ? this.realm.getMasterAdminClient()
