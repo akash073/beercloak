@@ -88,6 +88,14 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
             throw new NotAuthorizedException("Bearer");
         }*/
         LOG.info("realm = "+realm.getName());
+
+
+        AuthenticationManager.AuthResult authResult = AuthenticationManager.verifyIdentityToken(session,realm,session.getContext().getUri(),clientConnection,true,true,null,true,tokenString,headers);
+
+        LOG.info("authResult = "+authResult);
+        if (authResult == null) {
+            throw new NotAuthorizedException("Bearer");
+        }
         ClientModel client
                 = realm.getName().equals(Config.getAdminRealm())
                 ? this.realm.getMasterAdminClient()
@@ -97,17 +105,18 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
             throw new NotFoundException("Could not find client for authorization");
         }
 
-        //UserModel user = authResult.getUser();
-
-       /* Class clazz = (Class)((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        UserModel user = authResult.getUser();
+        LOG.info("user = "+user);
+        Class clazz = (Class)((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
         try {
             Constructor<? extends Type> constructor = clazz.getConstructor(RealmModel.class, AccessToken.class, UserModel.class, ClientModel.class);
             auth = (T) constructor.newInstance(new Object[] { realm, token, user, client });
+            LOG.info("auth = "+auth);
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             LOG.error("Failed to instantiate AdminAuth instance", ex);
-        }*/
-
+        }
+        LOG.info("done = ");
     }
 
     /*private void setupEvents() {
